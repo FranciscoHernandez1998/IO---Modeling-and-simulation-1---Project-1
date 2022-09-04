@@ -143,7 +143,6 @@ get_week_days_average_queues <- function() {
     }
     list_of_day_averages[[length(list_of_day_averages) + 1]] <- day_averages
   }
-  print(list_of_day_averages)
   data_frame= as.data.frame(list_of_day_averages)
   data_frame_header = c("num_of_servers",
                         "monday",
