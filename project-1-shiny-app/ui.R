@@ -12,13 +12,16 @@ shinyUI(fluidPage(
                  ),
                  fluidRow(
                      selectInput(
-                         'num_of_servers_ex1', 'Select a number of servers', num_of_servers_options, selected = 7
+                         'num_of_servers_ex1', 
+                         'Select a number of servers (1 - 7):', 
+                         num_of_servers_options, 
+                         selected = 7
                      )
                  ),
                  fluidRow(
                    numericInput(
                      'days_to_get_ex1', 
-                     'Enter how many days of the week to display: ',
+                     'Enter how many days of the week to display (1 - 7):',
                      value = 7,
                      min = 1,
                      max = 7,
@@ -43,13 +46,16 @@ shinyUI(fluidPage(
                  ),
                  fluidRow(
                    selectInput(
-                     'num_of_servers_ex3', 'Select a number of servers', num_of_servers_options, selected = 7
+                     'num_of_servers_ex3', 
+                     'Select a number of servers (1 - 7):', 
+                     num_of_servers_options, 
+                     selected = 7
                    )
                  ),
                  fluidRow(
                    numericInput(
                      'days_to_get_ex3', 
-                     'Enter how many days of the week to display: ',
+                     'Enter how many days of the week to display (1 - 7):',
                      value = 7,
                      min = 1,
                      max = 7,
