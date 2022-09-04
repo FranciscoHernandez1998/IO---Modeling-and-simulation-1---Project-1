@@ -133,13 +133,13 @@ run_all_servers_day_simulations <- function(week_day) {
 }
 
 # return -> data frame with averages of queues based on number of servers and day of the week
-get_week_days_average_queues <- function() {
-  list_of_day_averages <- list(c(1, 2, 3, 4, 5, 6, 7))
-  for (i in 1:7) {
+get_week_days_average_queues <- function(days_to_get=7, num_of_servers=7) {
+  list_of_day_averages <- list(seq(from = 1, to = num_of_servers, by = 1))
+  for (i in 1:days_to_get) {
     day_simulations <- run_all_servers_day_simulations(i)
     day_averages <- c()
-    for (j in 1:length(day_simulations)) {
-      day_averages <- c(day_averages, mean(as.numeric(day_simulations[[j]]$customers_queue)))
+    for (j in 1:num_of_servers) {
+      day_averages <- c(day_averages, ceiling(mean(as.numeric(day_simulations[[j]]$customers_queue))))
     }
     list_of_day_averages[[length(list_of_day_averages) + 1]] <- day_averages
   }
@@ -157,5 +157,3 @@ get_week_days_average_queues <- function() {
   colnames(data_frame)<-data_frame_header
   return(data_frame)
 }
-
-get_week_days_average_queues()
