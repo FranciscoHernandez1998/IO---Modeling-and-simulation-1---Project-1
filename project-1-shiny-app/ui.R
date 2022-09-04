@@ -19,7 +19,7 @@ shinyUI(fluidPage(
                      withSpinner(tableOutput('averages'))
                  ),
                  fluidRow(
-                   helpText('It takes and average time of 8 minutes for an agent to serve a customer and it has a standard deviation of 5 minutes'),
+                   helpText('Simulations were made considering that it takes an average time of 8 minutes for an agent to serve a customer and it has a standard deviation of 5 minutes'),
                    helpText('The time between arrivals by day is given by the next table: ')
                  ),
                  fluidRow(
