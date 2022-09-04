@@ -1,4 +1,4 @@
-source('../first-exercise.R')
+source('first-exercise.R')
 library(shiny)
 
 shinyServer(function(input, output) {
