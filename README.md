@@ -17,7 +17,7 @@ There are n agents working at the bank. Each of the bank agents takes in average
 
 ## Simulation
 
-The results and form of the simulation that was used to complete the items listed previously can be seen on the file [**"simulation-example.csv"**](./simulation-example.xlsx). This simulation was performed with two agents and a queue size of five
+The results and form of the simulation that was used to complete the items listed previously can be seen on the file [**"simulation-example.xlsx"**](./simulation-example.xlsx). This simulation was performed with two agents and a queue size of five
 
 ## How to run
 
