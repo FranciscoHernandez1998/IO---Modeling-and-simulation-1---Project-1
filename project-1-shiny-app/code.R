@@ -69,12 +69,14 @@ get_customer_arrivals <- function(week_day) {
 # param -> week_day: number from 1 to 7 representing day of the week
 # param -> servers_number: number from 1 to 7 representing amount of servers available
 # return -> entire simulation of a single day with n servers available
-#           correlative | time | customer_arrivals | next_arrival | agent_1_serving_time |... | agent_n_serving_time | customers_queue | unattended_customers | attended_customers
+#           correlative | time | customer_arrivals | next_arrival | agent_1_serving_time |... | agent_n_serving_time | customers_queue | unattended_customers | attended_customers | queue_time
 run_day_simulation <- function(week_day, servers_number, max_queue_size) {
   day_data <- list()
   customer_arrivals <- get_customer_arrivals(week_day)
   customers_queue <- 0
+  previous_customers_queue <- 0
   agents_serving_time <- c()
+  queue_time <- 0
   for(i in 1:servers_number) agents_serving_time <- c(agents_serving_time, 0)
   for (i in 1:length(customer_arrivals)) {
     row <- customer_arrivals[[i]]
@@ -92,6 +94,7 @@ run_day_simulation <- function(week_day, servers_number, max_queue_size) {
         }
       }
     }
+    previous_customers_queue <- customers_queue
     customers_queue <- pending_customers - served_customers
     finished_served_customers <- 0
     for (j in 1:length(agents_serving_time)) {
@@ -100,10 +103,23 @@ run_day_simulation <- function(week_day, servers_number, max_queue_size) {
       }
     }
     if(customers_queue > max_queue_size & max_queue_size != -1) {
-      day_data[[length(day_data) + 1]] <- c(customer_arrivals[[i]], agents_serving_time, c(max_queue_size, customers_queue - max_queue_size, finished_served_customers))
+      day_data[[length(day_data) + 1]] <- c(customer_arrivals[[i]], 
+                                            agents_serving_time, 
+                                            c(max_queue_size, customers_queue - max_queue_size, finished_served_customers),
+                                            if(previous_customers_queue > customers_queue & (customers_queue != 0)) queue_time else 0 )
       customers_queue <- max_queue_size
     } else {
-      day_data[[length(day_data) + 1]] <- c(customer_arrivals[[i]], agents_serving_time, c(customers_queue, 0, finished_served_customers))
+      day_data[[length(day_data) + 1]] <- c(customer_arrivals[[i]], 
+                                            agents_serving_time, 
+                                            c(customers_queue, 
+                                              0, 
+                                              finished_served_customers),
+                                            if(previous_customers_queue > customers_queue & (customers_queue != 0)) queue_time else 0)
+    }
+    if((previous_customers_queue > customers_queue & customers_queue != 0) | (customers_queue == 0)) {
+      queue_time <- 0
+    } else if(customers_queue != 0) {
+      queue_time <- queue_time + 1
     }
     for (j in 1:length(agents_serving_time)) {
       if(agents_serving_time[j] > 0){
@@ -117,7 +133,7 @@ run_day_simulation <- function(week_day, servers_number, max_queue_size) {
 # param -> day_data: all columns to construct data frame of simulation
 # param -> servers_number: number from 1 to 7 representing amount of servers available
 # return -> data frame with all simulation columns
-#           correlative | time | customer_arrivals | next_arrival | agent_1_serving_time | ... | agent_n_serving_time | customers_queue | unattended_customers | attended_customers
+#           correlative | time | customer_arrivals | next_arrival | agent_1_serving_time | ... | agent_n_serving_time | customers_queue | unattended_customers | attended_customers | queue_time
 get_day_data_frame <- function(day_data, servers_number) {
   agents_headers <- c()
   for(i in 1:servers_number) agents_headers <- c(agents_headers, paste("agent_", toString(i), "_serving_time", sep=''))
@@ -128,7 +144,8 @@ get_day_data_frame <- function(day_data, servers_number) {
                         agents_headers,
                         "customers_queue",
                         "unattended_customers",
-                        "attended_customers"
+                        "attended_customers",
+                        "queue_time"
   )
   data_frame= as.data.frame(t(as.data.frame(day_data)))
   rownames(data_frame)<- NULL
@@ -193,6 +210,36 @@ get_week_average_unattended_customers <- function(days_to_get=7, num_of_servers=
                         "saturday",
                         "sunday"
                         )[0:days_to_get + 1]
+  rownames(data_frame)<- NULL
+  colnames(data_frame)<-data_frame_header
+  return(data_frame)
+}
+
+
+# return -> data frame with averages of waiting time on queue
+get_week_average_queue_waiting_time <- function(days_to_get=7, num_of_servers=7, max_queue_size=10) {
+  list_of_day_averages <- list(seq(from = 1, to = num_of_servers, by = 1))
+  for (i in 1:days_to_get) {
+    day_simulations <- run_all_servers_day_simulations(i, max_queue_size)
+    day_averages <- c()
+    for (j in 1:num_of_servers) {
+      queue_times <- as.numeric(day_simulations[[j]]$queue_time)
+      non_zero_queue_times <- queue_times[queue_times != 0]
+      avg_waiting_time <- ceiling(mean(non_zero_queue_times))
+      day_averages <- c(day_averages, if(is.nan(avg_waiting_time)) 0 else avg_waiting_time )
+    }
+    list_of_day_averages[[length(list_of_day_averages) + 1]] <- day_averages
+  }
+  data_frame= as.data.frame(list_of_day_averages[0:days_to_get + 1])
+  data_frame_header = c("num_of_servers",
+                        "monday",
+                        "tuesday",
+                        "wednesday",
+                        "thursday",
+                        "friday",
+                        "saturday",
+                        "sunday"
+  )[0:days_to_get + 1]
   rownames(data_frame)<- NULL
   colnames(data_frame)<-data_frame_header
   return(data_frame)

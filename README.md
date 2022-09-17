@@ -21,4 +21,4 @@ The results and form of the simulation that was used to complete the items liste
 
 ## How to run
 
-Just import the project into RStudio and run the shiny app
+Just import the project into RStudio and run any file [ui | server].R

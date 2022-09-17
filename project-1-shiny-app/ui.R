@@ -39,6 +39,41 @@ shinyUI(fluidPage(
                    withSpinner(imageOutput("arrival_time_probabilities_ex1"))
                  )
         ),
+        tabPanel('Ex. 2 - Customer Average Wait Time in Queue',
+                 fluidRow(
+                     helpText('The next table displays the average time that a user has to wait in queue before being attended by a server. The values are in minutes')
+                 ),
+                 fluidRow(
+                     selectInput(
+                         'num_of_servers_ex2', 
+                         'Select a number of servers (1 - 7):', 
+                         num_of_servers_options, 
+                         selected = 7
+                     )
+                 ),
+                 fluidRow(
+                     numericInput(
+                         'days_to_get_ex2', 
+                         'Enter how many days of the week to display (1 - 7):',
+                         value = 7,
+                         min = 1,
+                         max = 7,
+                         step = 1
+                     )
+                 ),
+                 fluidRow(
+                     numericInput(
+                         'queue_max_size_ex2', 
+                         'Enter a maximum number for the queue of the bank: ',
+                         value = 10,
+                         min = 1,
+                         step = 1
+                     )
+                 ),
+                 fluidRow(
+                     withSpinner(tableOutput('averages_ex2'))
+                 )
+        ),
         tabPanel('Ex. 3 - Unattended Customers Average',
                  fluidRow(
                    helpText('The next table displays the average amount of unattended customers
